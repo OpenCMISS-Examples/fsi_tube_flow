@@ -12,11 +12,21 @@
 import math,numpy,csv,time,sys,os,pdb
 from opencmiss.iron import iron
 
+# Ensure output directories exist
+if not os.path.exists('./output'):
+    os.makedirs('./output')
+if not os.path.exists('./output/Fluid'):
+    os.makedirs('./output/Fluid')
+if not os.path.exists('./output/Solid'):
+    os.makedirs('./output/Solid')
+if not os.path.exists('./output/Interface'):
+    os.makedirs('./output/Interface')
+
 LINEAR = 1
 QUADRATIC = 2
 
-numberOfSquareElements = 3
-numberOfArmElements = 3
+numberOfSquareElements = 2
+numberOfArmElements = 2
 numberOfWallElements = 1
 numberOfLengthElements = 2
 
@@ -202,8 +212,9 @@ fsiProblemUserNumber = 1
 #================================================================================================================================
 
 # Get the computational nodes info
-numberOfComputationalNodes = iron.ComputationalNumberOfNodesGet()
-computationalNodeNumber    = iron.ComputationalNodeNumberGet()
+computationEnvironment = iron.ComputationEnvironment()
+numberOfComputationalNodes = computationEnvironment.NumberOfWorldNodesGet()
+computationalNodeNumber = computationEnvironment.WorldNodeNumberGet()
 
 #iron.OutputSetOn("Testing")
 
