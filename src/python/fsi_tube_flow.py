@@ -171,6 +171,7 @@ movingMeshUserNumber    = 4
 fluidDecompositionUserNumber     = 1
 solidDecompositionUserNumber     = 2
 interfaceDecompositionUserNumber = 3
+fsiDecomposernUserNumber = 1
   
 fluidGeometricFieldUserNumber = 11
 fluidEquationsSetFieldUserNumber = 12
@@ -217,8 +218,11 @@ iron.Context.WorldRegionGet(worldRegion)
 # Get the computational nodes info
 computationEnvironment = iron.ComputationEnvironment()
 iron.Context.ComputationEnvironmentGet(computationEnvironment)
-numberOfComputationalNodes = computationEnvironment.NumberOfWorldNodesGet()
-computationalNodeNumber = computationEnvironment.WorldNodeNumberGet()
+
+worldWorkGroup = iron.WorkGroup()
+computationEnvironment.WorldWorkGroupGet(worldWorkGroup)
+numberOfComputationalNodes = worldWorkGroup.NumberOfGroupNodesGet()
+computationalNodeNumber = worldWorkGroup.GroupNodeNumberGet()
 
 #iron.OutputSetOn("Testing")
 
@@ -1014,6 +1018,35 @@ interfaceDecomposition.CreateFinish()
 
 if (progressDiagnostics):
     print('Decomposition ... Done')
+    
+#================================================================================================================================
+#  Decomposer
+#================================================================================================================================
+
+if (progressDiagnostics):
+    print('Decomposer ...')
+
+fsiDecomposer = iron.Decomposer()
+fsiDecomposer.CreateStart(fsiDecomposerUserNumber,worldRegion,worldWorkGroup)
+
+if (problemType != FLUID):
+    # Add in solid mesh
+    solidDecompositionIndex = fsiDecomposer.DecompositionAdd(solidDecomposition)
+
+if (problemType != SOLID):
+    # Add in the fluid mesh
+    fluidDecompositionIndex = fsiDecomposer.DecompositionAdd(fluidDecomposition)
+
+if (problemType == FSI):
+    # Add in the interface mesh
+    interfaceDecompositionIndex = fsiDecomposer.DecompositionAdd(interfaceDecomposition)
+
+fsiDecomposer.OutputTypeSet(iron.DecomposerOutputTypes.ALL)    
+
+fsiDecomposer.CreateFinish()
+    
+if (progressDiagnostics):
+    print('Decomposer ... Done')
     
 #================================================================================================================================
 #  Geometric Field
