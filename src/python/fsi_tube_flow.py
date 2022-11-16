@@ -151,6 +151,8 @@ if numberOfLengthElements == 0:
 else:
     numberOfDimensions = 3
 
+contextUserNumber = 1
+
 fluidCoordinateSystemUserNumber     = 1
 solidCoordinateSystemUserNumber     = 2
 interfaceCoordinateSystemUserNumber = 3
@@ -212,12 +214,15 @@ fsiProblemUserNumber = 1
 #  Initialise OpenCMISS
 #================================================================================================================================
 
+context = iron.Context()
+context.Create(contextUserNumber)
+
 worldRegion = iron.Region()
-iron.Context.WorldRegionGet(worldRegion)
+context.WorldRegionGet(worldRegion)
 
 # Get the computational nodes info
 computationEnvironment = iron.ComputationEnvironment()
-iron.Context.ComputationEnvironmentGet(computationEnvironment)
+context.ComputationEnvironmentGet(computationEnvironment)
 
 worldWorkGroup = iron.WorkGroup()
 computationEnvironment.WorldWorkGroupGet(worldWorkGroup)
@@ -236,17 +241,17 @@ if (progressDiagnostics):
 
 # Create a RC coordinate system for the fluid region
 fluidCoordinateSystem = iron.CoordinateSystem()
-fluidCoordinateSystem.CreateStart(fluidCoordinateSystemUserNumber,iron.Context)
+fluidCoordinateSystem.CreateStart(fluidCoordinateSystemUserNumber,context)
 fluidCoordinateSystem.DimensionSet(3)
 fluidCoordinateSystem.CreateFinish()
 # Create a RC coordinate system for the solid region
 solidCoordinateSystem = iron.CoordinateSystem()
-solidCoordinateSystem.CreateStart(solidCoordinateSystemUserNumber,iron.Context)
+solidCoordinateSystem.CreateStart(solidCoordinateSystemUserNumber,context)
 solidCoordinateSystem.DimensionSet(3)
 solidCoordinateSystem.CreateFinish()
 # Create a RC coordinate system for the interface region
 interfaceCoordinateSystem = iron.CoordinateSystem()
-interfaceCoordinateSystem.CreateStart(interfaceCoordinateSystemUserNumber,iron.Context)
+interfaceCoordinateSystem.CreateStart(interfaceCoordinateSystemUserNumber,context)
 interfaceCoordinateSystem.DimensionSet(3)
 interfaceCoordinateSystem.CreateFinish()
 
@@ -287,7 +292,7 @@ numberOfNodesXi = uInterpolation+1
 numberOfGaussXi = uInterpolation+1
 
 uBasis = iron.Basis()
-uBasis.CreateStart(uBasisUserNumber,iron.Context)
+uBasis.CreateStart(uBasisUserNumber,context)
 uBasis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 uBasis.numberOfXi = 3
 if (uInterpolation == LINEAR):
@@ -301,7 +306,7 @@ uBasis.quadratureNumberOfGaussXi = [numberOfGaussXi]*3
 uBasis.CreateFinish()
 
 pBasis = iron.Basis()
-pBasis.CreateStart(pBasisUserNumber,iron.Context)
+pBasis.CreateStart(pBasisUserNumber,context)
 pBasis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 pBasis.numberOfXi = 3
 pBasis.interpolationXi = [iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*3
@@ -309,7 +314,7 @@ pBasis.quadratureNumberOfGaussXi = [numberOfGaussXi]*3
 pBasis.CreateFinish()
 
 interfaceBasis = iron.Basis()
-interfaceBasis.CreateStart(interfaceBasisUserNumber,iron.Context)
+interfaceBasis.CreateStart(interfaceBasisUserNumber,context)
 interfaceBasis.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
 interfaceBasis.numberOfXi = 2
 if (uInterpolation == LINEAR):
@@ -1703,7 +1708,7 @@ else:
     fsiProblemSpecification = [iron.ProblemClasses.MULTI_PHYSICS,
                                iron.ProblemTypes.FINITE_ELASTICITY_NAVIER_STOKES,
                                iron.ProblemSubtypes.FINITE_ELASTICITY_NAVIER_STOKES_ALE]
-fsiProblem.CreateStart(fsiProblemUserNumber,iron.Context,fsiProblemSpecification)
+fsiProblem.CreateStart(fsiProblemUserNumber,context,fsiProblemSpecification)
 fsiProblem.CreateFinish()
 
 if (progressDiagnostics):
